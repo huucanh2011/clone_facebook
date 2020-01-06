@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
+import store from "../store";
+
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -12,6 +14,7 @@ export default new VueRouter({
     {
       path: "/login",
       name: "login",
+      props: true,
       component: () => import("../views/Login.vue")
     },
     {
@@ -22,12 +25,23 @@ export default new VueRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("../views/Home.vue")
+      component: () => import("../views/Home.vue"),
+      beforeEnter: checkInfo
     },
     {
       path: "/profile/:id",
       name: "profile",
-      component: () => import("../views/Profile.vue")
+      component: () => import("../views/Profile.vue"),
+      beforeEnter: checkInfo
+    },
+    {
+      path: "*",
+      redirect: "/"
     }
   ]
 });
+
+async function checkInfo(to, from, next) {
+  await store.dispatch("authentication/CHECK_AUTH");
+  next();
+}

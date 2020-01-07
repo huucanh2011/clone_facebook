@@ -6,7 +6,13 @@ import store from "./store";
 
 import App from "./App.vue";
 
+import moment from "moment";
+
 Vue.use(Vuex);
+
+Vue.filter("myDate", function(created) {
+  return moment(created).fromNow();
+});
 
 const app = new Vue({
   el: "#app",

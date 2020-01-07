@@ -30,6 +30,8 @@ const actions = {
 
   async ADD_POST(context, payload) {
     try {
+      axios.defaults.headers.common["Content-Type"] = "multipart/form-data";
+
       const response = await Post.create(payload);
       if (response && response.status === 201) {
         context.commit("ADD_POST", response.data);

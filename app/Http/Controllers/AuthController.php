@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
+use App\Like;
 use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\User;
 use Validator;
 use Hash;
 
@@ -78,7 +79,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'access_token' => $token,
-            'user' => auth()->user(),
+            'user' => User::with('likes')->where('id', auth()->user()->id)->first(),
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);

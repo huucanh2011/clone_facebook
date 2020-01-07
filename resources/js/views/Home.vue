@@ -1,7 +1,5 @@
 <template>
   <div class="w-8/12 mx-auto my-5">
-    <!-- <add-new-post></add-new-post> -->
-
     <div
       class="flex flex-row justify-between items-center bg-white rounded-lg shadow-md px-4 py-3"
     >
@@ -20,11 +18,22 @@
           v-model="contentNewPost"
           @keyup.enter="addPost"
           @keyup.esc="cancelAddPost"
+          :disabled="!loggedIn"
         />
       </div>
       <div class="w-1/12">
+        <input
+          id="img_post"
+          type="file"
+          accept="image/*"
+          ref="imgPost"
+          :style="{ display: 'none' }"
+          @change="onChangeImagePost"
+        />
         <button
           class="bg-gray-300 rounded-full w-10 h-10 ml-auto flex justify-center items-center"
+          @click="onClickImagePost"
+          :disabled="!loggedIn"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
             <path
@@ -36,11 +45,7 @@
       </div>
     </div>
 
-    <post-item
-      v-for="post in posts"
-      :key="post.id"
-      :post="post"
-    ></post-item>
+    <post-item v-for="post in posts" :key="post.id" :post="post"></post-item>
   </div>
 </template>
 
@@ -48,12 +53,10 @@
   import { mapGetters, mapActions } from "vuex";
   import store from "../store";
 
-  // import AddNewPost from "../components/AddNewPost";
   import PostItem from "../components/PostItem";
 
   export default {
     components: {
-      // AddNewPost,
       PostItem
     },
 
@@ -62,29 +65,47 @@
     },
 
     computed: {
-      ...mapGetters("post", ["posts", "isLoading"])
+      ...mapGetters("post", ["posts", "isLoading"]),
+      loggedIn() {
+        return this.$store.getters["authentication/isAuthenticated"];
+      }
     },
 
     data() {
       return {
-        contentNewPost: ""
+        contentNewPost: "",
+        imagePost: ""
       };
     },
 
     methods: {
       ...mapActions("post", ["ADD_POST"]),
+      onClickImagePost() {
+        document.getElementById("img_post").click();
+      },
+      onChangeImagePost() {
+        this.imagePost = this.$refs.imgPost.files[0];
+      },
       addPost() {
-        if(this.contentNewPost.trim().length === 0) {
+        if (this.contentNewPost.trim().length === 0) {
           return;
         }
-        const post = {
-          content: this.contentNewPost
-        };
+        let post = new FormData();
+        post.append("content", this.contentNewPost);
+        if (
+          this.imagePost !== null &&
+          this.imagePost !== "" &&
+          this.imagePost !== undefined
+        ) {
+          post.append("image", this.imagePost);
+        }
         this.ADD_POST(post);
         this.contentNewPost = "";
+        this.imagePost = "";
       },
       cancelAddPost() {
         this.contentNewPost = "";
+        this.imagePost = "";
       }
     }
   };

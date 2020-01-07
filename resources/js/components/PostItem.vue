@@ -10,7 +10,7 @@
       />
       <div class="ml-4">
         <span class="font-semibold text-lg">{{ authorName }}</span>
-        <p class="text-gray-600 font-light text-sm">{{ createdAt }}</p>
+        <p class="text-gray-600 font-light text-sm">{{ createdAt | myDate }}</p>
       </div>
     </div>
     <div class="my-3">
@@ -18,21 +18,27 @@
         {{ content }}
       </p>
     </div>
-    <!-- <div class="border-gray-800 rounded-sm -mx-4 mb-3">
-        <img class="w-full object-cover" src="/img/avt-me.jpg" alt="image_post">
-      </div> -->
+    <div v-if="imagePost" class="border-gray-800 rounded-sm -mx-4 mb-3">
+      <img
+        class="w-full object-cover"
+        :src="`/storage/${imagePost}`"
+        alt="image_post"
+      />
+    </div>
     <div class="flex flex-row justify-between items-center my-3">
       <div class="flex flex-row items-center">
         <i class="material-icons-outlined">
           thumb_up_alt
         </i>
-        <p class="ml-2 text-gray-800">0 likes</p>
+        <p class="ml-2 text-gray-800">{{ totalLike }} likes</p>
       </div>
       <div class="text-gray-800">0 comments</div>
     </div>
     <div class="flex flex-row justify-between items-center">
       <button
         class="flex-1 flex flex-row justify-center rounded-lg py-2 hover:bg-blue-600 hover:text-white focus:outline-none"
+        :class="currentUserLike.some(item => item.post_id === postId) ? 'bg-blue-600 text-white' : ''"
+        @click="onClickLike(postId)"
       >
         <i class="material-icons-outlined">
           thumb_up_alt
@@ -77,6 +83,8 @@
 </template>
 
 <script>
+  import { mapGetters, mapActions } from "vuex";
+  import store from "../store";
   export default {
     name: "post-item",
 
@@ -89,10 +97,36 @@
 
     data() {
       return {
+        postId: this.post.id,
         authorName: this.post.user.name,
         content: this.post.content,
-        createdAt: this.post.created_at
+        createdAt: this.post.created_at,
+        imagePost: this.post.image,
+        userId: this.post.user_id,
+        totalLike: this.post.likes.length
       };
+    },
+
+    watch: {
+      totalLike() {
+        return this.post.likes.length
+      }
+    },
+
+    computed: {
+      ...mapGetters("authentication", ["currentUser", "currentUserLike", "isAuthenticated"]),
+    },
+
+    methods: {
+      ...mapActions("like", ["LIKE_POST"]),
+      onClickLike(postId) {
+        const like = {
+          post_id: postId
+        };
+        this.LIKE_POST(like).then(res => {
+          store.dispatch("authentication/CHECK_AUTH")
+        });
+      }
     }
   };
 </script>

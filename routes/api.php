@@ -11,3 +11,7 @@ Route::group(['prefix' => 'auth'], function () {
 Route::resources([
     'posts' => 'PostController',
 ]);
+
+Route::get('profile/{id}', 'UserController@getUser');
+
+Route::post('like', 'LikeController@like');

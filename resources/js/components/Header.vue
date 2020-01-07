@@ -1,6 +1,6 @@
 <template>
   <header
-    class="flex bg-white border-b-2 border-gray-200 fixed top-0 inset-x-0 z-100 h-16 items-center z-20"
+    class="flex bg-white border-b-2 border-gray-200 fixed top-0 inset-x-0 z-100 h-12 items-center z-50"
   >
     <div class="w-full max-w-srceen-xl relative mx-auto px-6">
       <div class="flex items-center -px-6">
@@ -31,7 +31,7 @@
             </svg>
           </router-link>
           <div
-            class="flex items-center bg-gray-200 text-gray-600 rounded-full py-2 px-4 ml-3"
+            class="flex items-center bg-gray-200 text-gray-600 rounded-full border-0 py-1 px-3 ml-3"
           >
             <button class="pr-2 text-gray-300 focus:outline-none">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
@@ -62,7 +62,7 @@
           </router-link>
           <router-link
             class="text-dark font-semibold mx-6 overflow-hidden"
-            :to="'/profile/:id'"
+            :to="`/profile/${ currentUser.id }`"
           >
             <img
               class="h-8 w-8 fill-current rounded-full"

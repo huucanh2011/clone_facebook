@@ -3,12 +3,17 @@ import JwtService from "../../utilities/jwt.service";
 
 const state = {
   user: {},
+  likes: [],
   isAuthenticated: !!JwtService.getToken()
 };
 
 const getters = {
   currentUser(state) {
     return state.user;
+  },
+
+  currentUserLike(state) {
+    return state.likes;
   },
 
   isAuthenticated(state) {
@@ -55,8 +60,6 @@ const actions = {
 
   CHECK_AUTH(context) {
     if (JwtService.getToken()) {
-      axios.defaults.headers.common["Content-Type"] = "multipart/form-data";
-
       axios.defaults.headers.common["Accept"] = "application/json";
 
       axios.defaults.headers.common[
@@ -82,15 +85,16 @@ const actions = {
   LOGOUT(context) {
     Authentication.logout().then(response => {
       context.commit("PURGE_AUTH");
-    })
+    });
   }
 };
 
 const mutations = {
-  SET_AUTH(state, params) {
+  SET_AUTH(state, data) {
     state.isAuthenticated = true;
-    state.user = params.user;
-    JwtService.saveToken(params.access_token);
+    state.user = data.user;
+    state.likes = data.user.likes;
+    JwtService.saveToken(data.access_token);
   },
 
   PURGE_AUTH(state) {

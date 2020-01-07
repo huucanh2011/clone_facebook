@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Post;
+use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
 
 class PostController extends Controller
 {
@@ -14,24 +15,25 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::with('user')->latest()->get();
+        $posts = Post::with('user', 'likes')->latest()->get();
 
         return $posts;
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        $request->validate([
+        request()->validate([
             'content' => 'required|string',
         ]);
 
-        //chưa xử lý up ảnh
         $post = Post::create([
-            'content' => $request->content,
+            'content' => request()->content,
             'user_id' => auth()->user()->id
         ]);
 
-        return response()->json(Post::with('user')->findOrFail($post->id), 201);
+        $this->storeImage($post);
+
+        return response()->json(Post::with('user','likes')->findOrFail($post->id), 201);
     }
 
     public function update(Request $request, $id)
@@ -42,13 +44,11 @@ class PostController extends Controller
             return response()->json('Unauthorized', 401);
         }
 
-        $data = $request->validate([
-            'content' => 'required|string',
-        ]);
+        $post->update($this->validateRequest());
 
-        $post->update($data);
+        $this->storeImage($post);
 
-        return response()->json(Post::with('user')->findOrFail($post->id), 200);
+        return response()->json(Post::with('user', 'likes')->findOrFail($post->id), 200);
     }
 
     public function destroy($id)
@@ -62,5 +62,22 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json('Deleted post', 200);
+    }
+
+    private function validateRequest() {
+        return request()-validate([
+            'content' => 'required|string',
+        ]);
+    }
+
+    private function storeImage($post) {
+        if(request()->has('image')) {
+            $post->update([
+                'image' => request()->image->store('uploads', 'public'),
+            ]);
+
+            $image = Image::make(public_path('storage/' . $post->image))->fit(600, 400);
+            $image->save();
+        }
     }
 }

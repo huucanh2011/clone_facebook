@@ -53,7 +53,7 @@
   import { mapGetters, mapActions } from "vuex";
   import store from "../store";
 
-  import PostItem from "../components/PostItem";
+  import PostItem from "../components/postitem/PostItem";
 
   export default {
     components: {

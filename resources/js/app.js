@@ -10,6 +10,11 @@ import moment from "moment";
 
 Vue.use(Vuex);
 
+// const eventBus = new Vue();
+// Vue.prototype.$eventBus = eventBus;
+
+window.eventBus = new Vue()
+
 Vue.filter("myDate", function(created) {
   return moment(created).fromNow();
 });

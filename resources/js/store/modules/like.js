@@ -10,6 +10,7 @@ const actions = {
       const response = await Like.like(payload);
       if (response && response.status === 200) {
         console.log(response);
+        context.dispatch('post/FETCH_POSTS', {}, {root: true})
       }
     } catch (error) {
       console.log(error.response.data);

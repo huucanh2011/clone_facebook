@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Post;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
+use App\Http\Resources\PostResource;
 
 class PostController extends Controller
 {
@@ -15,9 +16,9 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::with('user', 'likes')->latest()->get();
-
-        return $posts;
+        return PostResource::collection(
+            Post::with('user')->latest()->get()
+        );
     }
 
     public function store()
@@ -33,7 +34,7 @@ class PostController extends Controller
 
         $this->storeImage($post);
 
-        return response()->json(Post::with('user','likes')->findOrFail($post->id), 201);
+        return response()->json(new PostResource($post->load('user')), 201);
     }
 
     public function update(Request $request, $id)

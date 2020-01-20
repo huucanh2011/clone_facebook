@@ -54661,6 +54661,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
   like: function like(payload) {
     return axios.post("/api/like", payload);
+  },
+  unlike: function unlike(payload) {
+    return axios.post("/api/unlike", payload);
   }
 });
 
@@ -54735,7 +54738,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_2__["default"]);
+vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_2__["default"]); // const eventBus = new Vue();
+// Vue.prototype.$eventBus = eventBus;
+
+window.eventBus = new vue__WEBPACK_IMPORTED_MODULE_1___default.a();
 vue__WEBPACK_IMPORTED_MODULE_1___default.a.filter("myDate", function (created) {
   return moment__WEBPACK_IMPORTED_MODULE_6___default()(created).fromNow();
 });
@@ -54949,7 +54955,7 @@ vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     name: "login",
     props: true,
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.bind(null, /*! ../views/Login.vue */ "./resources/js/views/Login.vue"));
+      return __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ../views/Login.vue */ "./resources/js/views/Login.vue"));
     }
   }, {
     path: "/signup",
@@ -54961,14 +54967,14 @@ vue__WEBPACK_IMPORTED_MODULE_1___default.a.use(vue_router__WEBPACK_IMPORTED_MODU
     path: "/",
     name: "home",
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 1).then(__webpack_require__.bind(null, /*! ../views/Home.vue */ "./resources/js/views/Home.vue"));
+      return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(3)]).then(__webpack_require__.bind(null, /*! ../views/Home.vue */ "./resources/js/views/Home.vue"));
     },
     beforeEnter: checkInfo
   }, {
     path: "/profile/:id",
     name: "profile",
     component: function component() {
-      return __webpack_require__.e(/*! import() */ 3).then(__webpack_require__.bind(null, /*! ../views/Profile.vue */ "./resources/js/views/Profile.vue"));
+      return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(4)]).then(__webpack_require__.bind(null, /*! ../views/Profile.vue */ "./resources/js/views/Profile.vue"));
     },
     beforeEnter: checkInfo
   }, {
@@ -55187,6 +55193,9 @@ var actions = {
 
               if (response && response.status === 200) {
                 console.log(response);
+                context.dispatch('post/FETCH_POSTS', {}, {
+                  root: true
+                });
               }
 
               _context.next = 11;
@@ -55274,7 +55283,7 @@ var actions = {
               response = _context.sent;
 
               if (response && response.status === 200) {
-                context.commit("FETCH_POSTS", response.data);
+                context.commit("FETCH_POSTS", response.data.data);
               }
 
               _context.next = 11;

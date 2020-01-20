@@ -21,7 +21,7 @@ const actions = {
     try {
       const response = await Post.getAll();
       if (response && response.status === 200) {
-        context.commit("FETCH_POSTS", response.data);
+        context.commit("FETCH_POSTS", response.data.data);
       }
     } catch (error) {
       throw new Error(error.response.data);

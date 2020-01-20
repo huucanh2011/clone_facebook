@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col bg-white rounded-lg shadow-md border-gray-700 px-4 py-3 my-5"
+    class="flex flex-col bg-white rounded-lg shadow-xl border-gray-700 px-4 py-3 my-5"
   >
     <div class="flex flex-row items-center">
       <img
@@ -30,21 +30,13 @@
         <i class="material-icons-outlined">
           thumb_up_alt
         </i>
-        <p class="ml-2 text-gray-800">{{ totalLike }} likes</p>
+        <!-- <p class="ml-2 text-gray-800">{{ totalLike }} likes</p> -->
+        <count-like-post :countlike="this.post"></count-like-post>
       </div>
       <div class="text-gray-800">0 comments</div>
     </div>
     <div class="flex flex-row justify-between items-center">
-      <button
-        class="flex-1 flex flex-row justify-center rounded-lg py-2 hover:bg-blue-600 hover:text-white focus:outline-none"
-        :class="currentUserLike.some(item => item.post_id === postId) ? 'bg-blue-600 text-white' : ''"
-        @click="onClickLike(postId)"
-      >
-        <i class="material-icons-outlined">
-          thumb_up_alt
-        </i>
-        <div class="ml-2 font-medium">Like</div>
-      </button>
+      <like-button :content="this.post"></like-button>
       <button
         class="flex-1 flex flex-row justify-center rounded-lg py-2 hover:bg-blue-600 hover:text-white focus:outline-none"
       >
@@ -84,9 +76,16 @@
 
 <script>
   import { mapGetters, mapActions } from "vuex";
-  import store from "../store";
+  import store from "../../store";
+  import CountLikePost from "./CountLikePost";
+  import LikeButton from "./LikeButton";
   export default {
     name: "post-item",
+
+    components: {
+      CountLikePost,
+      LikeButton
+    },
 
     props: {
       post: {
@@ -102,19 +101,23 @@
         content: this.post.content,
         createdAt: this.post.created_at,
         imagePost: this.post.image,
-        userId: this.post.user_id,
-        totalLike: this.post.likes.length
+        liked: this.post.liked,
+        totalLike: this.post.likes_count
       };
     },
 
     watch: {
       totalLike() {
-        return this.post.likes.length
+        return this.post.likes.length;
       }
     },
 
     computed: {
-      ...mapGetters("authentication", ["currentUser", "currentUserLike", "isAuthenticated"]),
+      ...mapGetters("authentication", [
+        "currentUser",
+        "currentUserLike",
+        "isAuthenticated"
+      ])
     },
 
     methods: {
@@ -124,7 +127,7 @@
           post_id: postId
         };
         this.LIKE_POST(like).then(res => {
-          store.dispatch("authentication/CHECK_AUTH")
+          store.dispatch("authentication/CHECK_AUTH");
         });
       }
     }

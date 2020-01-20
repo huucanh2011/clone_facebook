@@ -15,3 +15,4 @@ Route::resources([
 Route::get('profile/{id}', 'UserController@getUser');
 
 Route::post('like', 'LikeController@like');
+Route::post('unlike', 'LikeController@unlike');
